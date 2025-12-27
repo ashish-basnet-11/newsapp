@@ -35,12 +35,11 @@ export const register = async (req: Request, res: Response) => {
         //  Send response 
         res.status(201).json({
             message: "User created successfully",
+            token,
             user: {
                 id: newUser.id,
                 name: newUser.name,
                 email: newUser.email,
-                token,
-
             },
         });
 
@@ -76,11 +75,11 @@ export const login = async (req: Request, res: Response) => {
 
     res.status(201).json({
         status: "success",
+        token,
         data: {
             user: user.id,
             name: user.name,
             email: user.email,
-            token,
         }
     })
 
