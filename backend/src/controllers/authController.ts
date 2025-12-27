@@ -2,7 +2,7 @@ import type { Request, Response } from "express";
 import AppDataSource from "../config/db.js";
 import { User } from "../Entities/User.js";
 import bcrypt from "bcrypt";
-import { json } from "node:stream/consumers";
+import generateToken from "../utils/generateToken.js";
 
 
 export const register = async (req: Request, res: Response) => {
@@ -29,7 +29,20 @@ export const register = async (req: Request, res: Response) => {
 
         await data.save(newUser)
 
-        res.status(201).json({ message: "User created successfully", user: newUser });
+        const token = generateToken(newUser.id)
+
+
+        //  Send response 
+        res.status(201).json({
+            message: "User created successfully",
+            user: {
+                id: newUser.id,
+                name: newUser.name,
+                email: newUser.email,
+                token,
+
+            },
+        });
 
     } catch (error) {
         console.error("Error creating user:", error);
@@ -59,12 +72,15 @@ export const login = async (req: Request, res: Response) => {
 
     }
 
+    const token = generateToken(user.id)
+
     res.status(201).json({
         status: "success",
         data: {
             user: user.id,
             name: user.name,
-            email: user.email
+            email: user.email,
+            token,
         }
     })
 
