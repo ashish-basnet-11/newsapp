@@ -29,7 +29,7 @@ export const register = async (req: Request, res: Response) => {
 
         await data.save(newUser)
 
-        const token = generateToken(newUser.id)
+        const token = generateToken(res, newUser.id, newUser.role)
 
         //  Send response 
         res.status(201).json({
@@ -67,7 +67,7 @@ export const login = async (req: Request, res: Response) => {
         return res.status(400).json({ error: "Invalid email or password" });
     }
 
-    const token = generateToken(user.id);
+    const token = generateToken(res, user.id, user.role);
 
     res.status(200).json({
         status: "success",
