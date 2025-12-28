@@ -1,5 +1,6 @@
 import { DataSource } from "typeorm";
 import { User } from "../Entities/User.js";
+import { Article } from "../Entities/Article.js";
 
 const AppDataSource = new DataSource({
     type: "postgres",
@@ -10,7 +11,7 @@ const AppDataSource = new DataSource({
     database: "news_db",
     logging: true,
     synchronize: true,
-    entities: [User]
+    entities: [User, Article]
 
 })
 

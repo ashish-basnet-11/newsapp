@@ -31,7 +31,6 @@ export const register = async (req: Request, res: Response) => {
 
         const token = generateToken(newUser.id)
 
-
         //  Send response 
         res.status(201).json({
             message: "User created successfully",
@@ -51,36 +50,32 @@ export const register = async (req: Request, res: Response) => {
 
 export const login = async (req: Request, res: Response) => {
     const { email, password } = req.body;
-
     const data = AppDataSource.getRepository(User);
 
-    //check if the user exists
-
-    const user = await data.findOneBy({ email });
+    const user = await data.findOne({
+        where: { email },
+        select: ["id", "name", "email", "password", "role"]
+    });
 
     if (!user) {
-        return res.status(400).json({ error: "Invalid email or password" })
+        return res.status(400).json({ error: "Invalid email or password" });
     }
 
-    // verify password
-
-    const isPasswordValid = await bcrypt.compare(password, user.password)
+    const isPasswordValid = await bcrypt.compare(password, user.password);
 
     if (!isPasswordValid) {
-        return res.status(400).json({ error: "Invalid email or password" })
-
+        return res.status(400).json({ error: "Invalid email or password" });
     }
 
-    const token = generateToken(user.id)
+    const token = generateToken(user.id);
 
-    res.status(201).json({
+    res.status(200).json({
         status: "success",
         token,
         data: {
-            user: user.id,
+            id: user.id,
             name: user.name,
             email: user.email,
         }
-    })
-
-}
+    });
+};
