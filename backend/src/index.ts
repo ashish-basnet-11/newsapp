@@ -4,6 +4,7 @@ import AppDataSource from "./config/db.js";
 import authRoutes from './routes/authRoutes.js'
 import likeRoutes from './routes/likeRoutes.js'
 import articleRoutes from './routes/articleRoutes.js'
+import commentRoutes from './routes/commentRoutes.js'
 import cookieParser from "cookie-parser";
 
 
@@ -14,6 +15,8 @@ app.use(cookieParser());
 app.use("/api/auth", authRoutes)
 app.use("/api/articles", articleRoutes)
 app.use("/api/likes", likeRoutes)
+app.use("/api/comments", commentRoutes)
+
 
 const PORT = 5001
 
