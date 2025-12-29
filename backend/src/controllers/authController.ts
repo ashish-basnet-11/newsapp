@@ -50,9 +50,9 @@ export const register = async (req: Request, res: Response) => {
 
 export const login = async (req: Request, res: Response) => {
     const { email, password } = req.body;
-    const data = AppDataSource.getRepository(User);
+    const UserRepo = AppDataSource.getRepository(User);
 
-    const user = await data.findOne({
+    const user = await UserRepo.findOne({
         where: { email },
         select: ["id", "name", "email", "password", "role"]
     });

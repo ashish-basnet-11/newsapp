@@ -7,7 +7,7 @@ export class User extends BaseEntity {
     @PrimaryGeneratedColumn()
     id!: number;
 
-    @Column({type: "varchar"})
+    @Column({ type: "varchar" })
     name!: string;
 
     @Column({ type: "varchar", unique: true })
@@ -28,4 +28,7 @@ export class User extends BaseEntity {
 
     @OneToMany("Like", "user")
     likes!: Relation<Like>[];
+
+    @OneToMany("Comment", "user")
+    comments!: Relation<Comment>[];
 }

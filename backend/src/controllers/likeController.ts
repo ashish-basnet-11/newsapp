@@ -1,7 +1,6 @@
 import type { Request, Response } from "express";
 import { Article } from "../Entities/Article.js";
 import { Like } from "../Entities/Like.js";
-import { count } from "node:console";
 
 export const toggleLike = async (req: Request, res: Response) => {
     try {
@@ -54,7 +53,7 @@ export const getAllLikes = async (req: Request, res: Response) => {
         status: "Success",
         data : {
             likes: likes.map(like => ({
-                userId: {id: (like.user as any).id}
+                userName: {name: (like.user as any).name},
             })),
             count: likes.length
         }
