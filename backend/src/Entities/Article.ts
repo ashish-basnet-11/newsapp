@@ -1,17 +1,21 @@
-import { Entity, PrimaryGeneratedColumn, Column, BaseEntity, ManyToOne } from 'typeorm'
-import type { User } from './User.js'
+import { Entity, PrimaryGeneratedColumn, Column, BaseEntity, ManyToOne, OneToMany } from 'typeorm';
+import { User } from './User.js';
+import { Like } from './Like.js';
 
 @Entity("articles")
 export class Article extends BaseEntity {
     @PrimaryGeneratedColumn()
-    id!: number
+    id!: number;
 
-    @Column()
-    title!: string
+    @Column({type: "varchar"})
+    title!: string;
 
-    @Column("text") 
-    content!: string
+    @Column({type: "text"})
+    content!: string;
 
-    @ManyToOne("User", "articles")
+    @ManyToOne(() => User, (user) => user.articles)
     author!: User;
+
+    @OneToMany("Like", "article") // Use string "Article"
+    likes!: Like[];
 }

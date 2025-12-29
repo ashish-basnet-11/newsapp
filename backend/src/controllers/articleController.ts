@@ -2,8 +2,7 @@ import type { Request, Response } from "express";
 import AppDataSource from "../config/db.js";
 import { Article } from "../Entities/Article.js";
 import { User } from "../Entities/User.js";
-import { request } from "node:http";
-import { error } from "node:console";
+
 
 export const createArticle = async (req: Request, res: Response) => {
     const {title, content} = req.body;
@@ -29,7 +28,8 @@ export const createArticle = async (req: Request, res: Response) => {
 export const getAllArticles = async (req: Request, res: Response) => {
     const articles = await Article.find({
         relations: {
-            author: true
+            author: true,
+            likes: true
         },
         order: {
             id: "DESC"
@@ -40,7 +40,15 @@ export const getAllArticles = async (req: Request, res: Response) => {
         return res.json("No articles found")
     }
 
-    return res.json(articles)
+    const articleData = articles.map(article => ({
+        id: article.id,
+        title: article.title,
+        content: article.content,
+        author: article.author,
+        likesCount: article.likes.length,
+    }))
+
+    return res.json(articleData)
 }
 
 

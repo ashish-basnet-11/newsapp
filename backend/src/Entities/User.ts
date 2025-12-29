@@ -1,18 +1,19 @@
-import { Entity, PrimaryGeneratedColumn, Column, BaseEntity, OneToMany } from 'typeorm'
-import type { Article } from './Article.js';
+import { Entity, PrimaryGeneratedColumn, Column, BaseEntity, OneToMany, type Relation } from 'typeorm';
+import { Article } from './Article.js';
+import { Like } from './Like.js';
 
 @Entity("users")
 export class User extends BaseEntity {
     @PrimaryGeneratedColumn()
     id!: number;
 
-    @Column()
+    @Column({type: "varchar"})
     name!: string;
 
-    @Column({ unique: true })
+    @Column({ type: "varchar", unique: true })
     email!: string;
 
-    @Column({ select: false }) 
+    @Column({ type: "varchar", select: false })
     password!: string;
 
     @Column({
@@ -23,5 +24,8 @@ export class User extends BaseEntity {
     role!: string;
 
     @OneToMany("Article", "author")
-    articles!: Article[]
+    articles!: Relation<Article>[];
+
+    @OneToMany("Like", "user")
+    likes!: Relation<Like>[];
 }
