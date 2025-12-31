@@ -6,7 +6,7 @@ export const toggleLike = async (req: Request, res: Response) => {
     try {
         const { articleId } = req.params;
 
-        const userId = (req as any).user.id
+        const userId = req.user?.id
 
         const article = await Article.findOneBy({ id: Number(articleId) })
 
@@ -14,14 +14,21 @@ export const toggleLike = async (req: Request, res: Response) => {
             return res.status(400).json({ error: "Article doesn't exist" })
         }
 
-        const existingLike = await Like.findOneBy({ user: { id: userId }, article: { id: Number(articleId) } })
+        const existingLike = await Like.findOne({
+            where: {
+                user: {id: Number(userId)},
+                article: {id: Number (articleId)}
+            }
+        })
 
         if (existingLike) {
             await existingLike.remove();
             return res.json({ message: "Unliked article" });
-        } else {
+        } 
+        else
+        {
             const newLike = Like.create({
-                user: { id: userId },
+                user: { id: Number(userId) },
                 article: { id: Number(articleId) }
             })
 
