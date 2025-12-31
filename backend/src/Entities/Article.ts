@@ -19,7 +19,6 @@ export class Article extends BaseEntity {
     @OneToMany("Like", "article")
     likes!: Like[];
 
-    // Add this property inside the Article class
     @OneToMany("Comment", "article")
     comments!: Relation<Comment>[];
 }
