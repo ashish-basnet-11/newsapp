@@ -30,7 +30,7 @@ export const getAllArticles = async (req: Request, res: Response) => {
         const articles = await Article.find({
             relations: {
                 author: true,
-                likes: true,
+                likes: { user: true },
                 comments: true,
             },
             order: {
@@ -67,7 +67,7 @@ export const getArticleById = async (req: Request, res: Response) => {
             where: { id: Number(articleId) },
             relations: {
                 author: true,
-                likes: true,
+                likes: { user: true },
                 comments: true,
             },
         });
@@ -76,14 +76,18 @@ export const getArticleById = async (req: Request, res: Response) => {
             return res.status(404).json({ message: "Article not found" });
         }
 
-        return res.status(201).json({
+        return res.status(200).json({
             status: "success",
             data: {
                 ...article,
-                likes: article.likes.length,
-                Comments: article.comments.length
+                likedBy: article.likes.map(like => ({
+                    id: like.user.id,
+                    name: like.user.name
+                })),
+                likesCount: article.likes.length,
+                commentsCount: article.comments.length
             }
-        })
+        });
 
     } catch (error) {
         res.status(400).json({ error: "Error fetching the articles" })
@@ -91,16 +95,59 @@ export const getArticleById = async (req: Request, res: Response) => {
     }
 }
 
+export const updateArticles = async (req: Request, res: Response) => {
+
+    try {
+        const { articleId } = req.params;
+        const { title, content } = req.body;
+        const userId = req.user?.id;
+        const userRole = req.user?.role;
+
+        const existingArticle = await Article.findOne({
+            where: { id: Number(articleId) },
+            relations: {
+                author: true,
+            },
+        });
+
+
+        if (!existingArticle) {
+            return res.status(404).json({
+                error: "Article doesn't exist"
+            })
+        }
+
+        if (existingArticle.author.id !== userId && userRole === "admin") {
+            return res.status(403).json({
+                error: "You don't have permission to update this post"
+            });
+        }
+
+        existingArticle.title = title;
+        existingArticle.content = content;
+
+        await existingArticle.save();
+
+        res.status(200).json({
+            message: "Article updated successfully",
+            article: existingArticle
+        });
+    } catch (error) {
+        res.status(500).json({ error: "Internal server error" });
+    }
+
+}
+
 
 export const deleteArticle = async (req: Request, res: Response) => {
-    const { id } = req.params;
+    const { articleId } = req.params;
 
     const { id: userId, role: userRole } = (req as any).user;
 
     const articleRepo = AppDataSource.getRepository(Article);
 
     const article = await Article.findOne({
-        where: { id: Number(id) }, relations: ['author']
+        where: { id: Number(articleId) }, relations: ['author']
     })
 
     if (!article) {

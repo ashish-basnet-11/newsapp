@@ -1,12 +1,13 @@
 import express from 'express'
-import { createArticle, deleteArticle, getAllArticles, getArticleById } from '../controllers/articleController.js';
+import { createArticle, deleteArticle, getAllArticles, getArticleById, updateArticles } from '../controllers/articleController.js';
 import { authorize, protect } from '../middleware/authMidlleware.js';
 
 const router = express.Router();
 
 router.post("/",protect, authorize("admin", "editor"),createArticle)
+router.put("/:articleId",protect, authorize("admin", "editor"),updateArticles)
 router.get("/", getAllArticles)
 router.get("/:articleId", getArticleById)
-router.delete("/:id", protect, deleteArticle)
+router.delete("/:articleId", protect, deleteArticle)
 
 export default router;

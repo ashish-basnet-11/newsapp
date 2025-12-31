@@ -48,39 +48,87 @@ export const commentArticle = async (req: Request, res: Response) => {
 }
 
 export const getAllComments = async (req: Request, res: Response) => {
-    const comments = await Comment.find({
-        relations: {
-            user: true,
-            article: true
-        },
-        order: {
-            id: "DESC"
-        }
-    })
+    try {
+        const comments = await Comment.find({
+            relations: {
+                user: true,
+                article: true
+            },
+            order: {
+                id: "DESC"
+            }
+        });
 
-    res.json({
-        status: "Success",
-        data: {
-            comments: comments.map(comment => ({
-                userName: { name: (comment.user as any).name },
-                comment: comment.message,
-                Articletitle: (comment.article as any)?.title
-            })),
-            count: comments.length
+        return res.json({
+            status: "Success",
+            count: comments.length,
+            data: comments.map(comment => ({
+                id: comment.id,
+                user: {
+                    id: comment.user.id,
+                    name: comment.user.name
+                },
+                message: comment.message,
+                articleTitle: comment.article?.title || "Deleted Article"
+            }))
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Error fetching comments" });
+    }
+}
+
+export const updateComment = async (req: Request, res: Response) => {
+
+    try {
+        const { commentId } = req.params;
+        const { message } = req.body;
+        const userId = req.user?.id;
+
+        const commentExists = await Comment.findOne({
+            where: { id: Number(commentId) },
+            relations: {
+                user: true
+            }
+        })
+
+        if (!commentExists) {
+            return res.status(400).json({ error: "comment doesn't exist" })
         }
-    })
+
+        if (commentExists.user.id !== userId) {
+            return res.status(403).json({
+                error: "You don't have permission to update this post"
+            });
+        }
+
+
+        commentExists.message = message;
+
+        await commentExists.save();
+
+        res.status(200).json({
+            message: "Comment updated successfully",
+            article: commentExists
+        });
+
+    } catch (error) {
+        res.status(500).json({ error: "Internal server error" });
+
+    }
+
 }
 
 export const deleteComment = async (req: Request, res: Response) => {
     try {
-        const { id } = req.params;
+        const { commentId } = req.params;
 
         const { id: userId, role: userRole } = (req as any).user;
 
         const commentRepo = AppDataSource.getRepository(Comment);
 
         const comment = await Comment.findOne({
-            where: { id: Number(id) }, relations: ['user']
+            where: { id: Number(commentId) }, relations: ['user']
         })
 
         if (!comment) {
@@ -99,7 +147,7 @@ export const deleteComment = async (req: Request, res: Response) => {
 
         }
     } catch (error) {
-        return res.status(400).json({error: "Error deleting a comment"})
+        return res.status(400).json({ error: "Error deleting a comment" })
     }
 
-}   
+}
