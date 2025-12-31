@@ -7,11 +7,11 @@ import { User } from "../Entities/User.js";
 export const createArticle = async (req: Request, res: Response) => {
     const { title, content } = req.body;
 
-    const authorId = (req as any).user.id;
+    const authorId = req.user?.id;
 
     const data = AppDataSource.getRepository(Article);
 
-    const userExists = await User.findOneBy({ id: authorId })
+    const userExists = await User.findOne({where: { id: Number(authorId) }})
 
     if (!userExists) {
         return res.status(404).json({ message: "User not found" });
@@ -46,7 +46,10 @@ export const getAllArticles = async (req: Request, res: Response) => {
             id: article.id,
             title: article.title,
             content: article.content,
-            author: article.author,
+            author: {
+                id: article.author.id,
+                name: article.author.name
+            },
             likesCount: article.likes.length,
             commentsCount: article.comments.length,
 

@@ -8,7 +8,7 @@ export class Comment extends BaseEntity {
     id!: number;
 
     @Column({ type: "text" })
-    message!: string; // The actual comment text
+    message!: string;
 
     @CreateDateColumn()
     createdAt!: Date;

@@ -9,7 +9,7 @@ export const commentArticle = async (req: Request, res: Response) => {
 
         const { articleId } = req.params;
 
-        const userId = (req as any).user.id;
+        const userId = req.user?.id
 
         const { message } = req.body;
 
@@ -27,7 +27,7 @@ export const commentArticle = async (req: Request, res: Response) => {
 
         const newComment = commentRepo.create({
             message,
-            user: { id: userId },
+            user: { id: Number(userId) },
             article: { id: Number(articleId) }
         })
 
@@ -123,7 +123,10 @@ export const deleteComment = async (req: Request, res: Response) => {
     try {
         const { commentId } = req.params;
 
-        const { id: userId, role: userRole } = (req as any).user;
+        // const { id: userId, role: userRole } = (req as any).user;
+
+        const userId = req.user?.id;
+        const userRole = req.user?.role
 
         const commentRepo = AppDataSource.getRepository(Comment);
 
