@@ -1,6 +1,7 @@
+import type { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken"
 
-export const protect = async (req: any, res: any, next: any) => {
+export const protect = async (req: Request, res: Response, next: NextFunction) => {
     const token = req.cookies.jwt;
 
     if (!token) {
