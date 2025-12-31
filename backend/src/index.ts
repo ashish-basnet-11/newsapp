@@ -58,7 +58,6 @@ const startServer = async () => {
             console.log(`Server is running on ${PORT}`);
         })
         await AppDataSource.initialize()
-        console.log("Database has been connected")
     } catch (error) {
         console.error("Error during Data Source initialization", error)
     }

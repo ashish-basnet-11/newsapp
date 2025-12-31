@@ -2,7 +2,6 @@ import type { Request, Response } from "express";
 import { Article } from "../Entities/Article.js";
 import AppDataSource from "../config/db.js";
 import { Comment } from "../Entities/Comment.js";
-import { count } from "node:console";
 
 
 export const commentArticle = async (req: Request, res: Response) => {
