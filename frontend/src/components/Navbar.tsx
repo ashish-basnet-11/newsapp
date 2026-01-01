@@ -27,7 +27,7 @@ export const Navbar = () => {
                         <span className="text-white font-bold">N</span>
                     </div>
                     <span className="font-bold text-xl tracking-tight text-gray-900">
-                        News<span className="text-blue-600">App</span>
+                        The<span className="text-blue-600">Post</span>
                     </span>
                 </Link>
 
