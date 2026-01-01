@@ -37,6 +37,7 @@ export const register = async (req: Request, res: Response) => {
 
         //  Send response 
         res.status(201).json({
+            status: "success",
             message: "User created successfully",
             token,
             user: {
@@ -93,3 +94,24 @@ export const login = async (req: Request, res: Response) => {
         return res.status(401).json({ error: "Error logging in" })
     }
 };
+
+export const logout = async (req: Request, res: Response) => {
+    try {
+
+        res.cookie("jwt", "", {
+            httpOnly: true,
+            expires: new Date(0),
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "strict"
+        })
+
+        res.status(200).json({
+            status: "success",
+            message: "Logged out successfully"
+        });
+
+    } catch (error) {
+        console.error("Logout error:", error);
+        res.status(500).json({ error: "Internal server error during logout" });
+    }
+}
