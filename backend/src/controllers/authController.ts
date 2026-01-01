@@ -115,3 +115,29 @@ export const logout = async (req: Request, res: Response) => {
         res.status(500).json({ error: "Internal server error during logout" });
     }
 }
+
+export const getMe = async (req: Request, res: Response) => {
+    try {
+        const userId = req.user?.id;
+
+        if (!userId) {
+            return res.status(401).json({ message: "Not authenticated" });
+        }
+
+        const user = await User.findOne({
+            where: { id: userId },
+            select: ["id", "name", "email", "role"]
+        });
+
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        return res.status(200).json({
+            status: "success",
+            user
+        });
+    } catch (error) {
+        return res.status(500).json({ message: "Internal server error" });
+    }
+};
