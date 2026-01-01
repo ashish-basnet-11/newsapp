@@ -7,16 +7,24 @@ import articleRoutes from './routes/articleRoutes.js'
 import commentRoutes from './routes/commentRoutes.js'
 import cookieParser from "cookie-parser";
 import rateLimit from 'express-rate-limit'
+import cors from 'cors'
 
 
 const app = express();
 app.use(express.json());
 app.use(cookieParser());
 
+//cors configuratin
+
+app.use(cors({
+    origin: "http://localhost:3000",
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authrization"]
+}))
 
 
 // rate limit
-
 
 const isDev = process.env.NODE_ENV === 'development'
 

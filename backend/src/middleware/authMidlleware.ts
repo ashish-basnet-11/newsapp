@@ -1,6 +1,14 @@
 import type { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken"
 
+
+interface JwtPayload {
+    id: number;
+    role: string;
+    iat: number; // Issued at (added by JWT automatically)
+    exp: number; // Expiration (added by JWT automatically)
+}
+
 export const protect = async (req: Request, res: Response, next: NextFunction) => {
     const token = req.cookies.jwt;
 
@@ -12,7 +20,7 @@ export const protect = async (req: Request, res: Response, next: NextFunction) =
 
     try {
 
-        const decoded = jwt.verify(token, JWT_SECRET!) as any
+        const decoded = jwt.verify(token, JWT_SECRET!) as JwtPayload
 
 
         req.user = decoded;
