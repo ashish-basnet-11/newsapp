@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server'
-import React from 'react'
 
 export const middleware = (request: NextRequest) => {
     const token = request.cookies.get('jwt');
