@@ -28,19 +28,15 @@ export const createArticle = async (req: Request, res: Response) => {
 export const getAllArticles = async (req: Request, res: Response) => {
     try {
         const articles = await Article.find({
-            relations: {
-                author: true,
-                likes: { user: true },
-                comments: true,
-            },
-            order: {
-                id: "DESC"
-            }
-        })
-
-        if (!articles) {
-            return res.status(400).json("No articles found")
-        }
+            relations: [
+                "author", 
+                "likes", 
+                "likes.user", 
+                "comments", 
+                "comments.user"
+            ],
+            order: { id: "DESC" }
+        });
 
         const articleData = articles.map(article => ({
             id: article.id,
@@ -50,16 +46,28 @@ export const getAllArticles = async (req: Request, res: Response) => {
                 id: article.author.id,
                 name: article.author.name
             },
-            likesCount: article.likes.length,
-            commentsCount: article.comments.length,
+            likes: article.likes?.map(like => ({
+                userId: like.user?.id,
+                userName: like.user?.name
+            })) || [],
+            // Matches your entity: "message" and "user"
+            comments: article.comments?.map((comment: any) => ({
+                id: comment.id,
+                message: comment.message, // Corrected from .text
+                userName: comment.user?.name || "Anonymous"
+            })) || []
+        }));
 
-        }))
-
-        return res.json(articleData)
+        return res.json({
+            status: "success",
+            data: articleData
+        });
     } catch (error) {
-        res.status(401).json({ error: "Error fetching all the articles" })
+        console.error("Fetch Articles Error:", error);
+        res.status(500).json({ error: "Error fetching articles" });
     }
 }
+
 
 export const getArticleById = async (req: Request, res: Response) => {
     try {
