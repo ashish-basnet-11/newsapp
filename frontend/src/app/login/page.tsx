@@ -22,7 +22,7 @@ const LoginPage = () => {
             const response = await api.post("/auth/login", { email, password });
 
             if (response.data.status === "success") {
-                console.log("Full API Response:", response.data);
+                // console.log(" Response:", response.data);
                 login(response.data.data);
                 router.push("/");
                 router.refresh();

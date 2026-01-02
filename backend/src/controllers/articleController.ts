@@ -5,24 +5,38 @@ import { User } from "../Entities/User.js";
 
 
 export const createArticle = async (req: Request, res: Response) => {
-    const { title, content } = req.body;
+    try {
+        const { title, content } = req.body;
+        const authorId = req.user?.id;
 
-    const authorId = req.user?.id;
+        const articleRepository = AppDataSource.getRepository(Article);
 
-    const data = AppDataSource.getRepository(Article);
+        const userExists = await User.findOne({ where: { id: Number(authorId) } });
 
-    const userExists = await User.findOne({where: { id: Number(authorId) }})
+        if (!userExists) {
+            return res.status(404).json({ status: "fail", message: "User not found" });
+        }
 
-    if (!userExists) {
-        return res.status(404).json({ message: "User not found" });
+        const article = articleRepository.create({ 
+            title, 
+            content, 
+            author: userExists 
+        });
+
+        await articleRepository.save(article);
+
+        return res.status(201).json({
+            status: "success",
+            data: article
+        });
+
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ 
+            status: "error", 
+            message: "Internal server error" 
+        });
     }
-
-    const article = data.create({ title, content, author: userExists })
-
-    await data.save(article)
-
-    return res.json(article)
-
 }
 
 export const getAllArticles = async (req: Request, res: Response) => {
@@ -50,10 +64,9 @@ export const getAllArticles = async (req: Request, res: Response) => {
                 userId: like.user?.id,
                 userName: like.user?.name
             })) || [],
-            // Matches your entity: "message" and "user"
             comments: article.comments?.map((comment: any) => ({
                 id: comment.id,
-                message: comment.message, // Corrected from .text
+                message: comment.message,
                 userName: comment.user?.name || "Anonymous"
             })) || []
         }));
