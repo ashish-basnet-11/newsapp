@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react"; // Added useRef
+import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { RoleGuard } from "@/components/guards/RoleGuard";
 import api from "@/lib/api";
@@ -9,26 +9,44 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Loader2, PenLine, ImageIcon, X } from "lucide-react"; // Added Icons
+import { Loader2, PenLine, ImageIcon, X, Tags } from "lucide-react";
 import { toast } from "sonner";
+
+const CATEGORIES = [
+    "General",
+    "Sport",
+    "Business",
+    "Innovation",
+    "Health",
+    "Culture",
+    "Arts",
+    "Travel"
+];
 
 const CreateArticle = () => {
     const [title, setTitle] = useState("");
     const [content, setContent] = useState("");
-    const [image, setImage] = useState<File | null>(null); // New state for file
-    const [preview, setPreview] = useState<string | null>(null); // New state for preview
+    const [category, setCategory] = useState("General");
+    const [image, setImage] = useState<File | null>(null);
+    const [preview, setPreview] = useState<string | null>(null);
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
     const router = useRouter();
     const fileInputRef = useRef<HTMLInputElement>(null);
 
-    // Handle image selection and create preview URL
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
             setImage(file);
-            setPreview(URL.createObjectURL(file)); // Create local URL for preview
+            setPreview(URL.createObjectURL(file));
         }
     };
 
@@ -44,12 +62,13 @@ const CreateArticle = () => {
         setLoading(true);
 
         try {
-            // IMPORTANT: Use FormData for file uploads
             const formData = new FormData();
             formData.append("title", title);
             formData.append("content", content);
+            formData.append("category", category);
+
             if (image) {
-                formData.append("image", image); // Name must match upload.single('image')
+                formData.append("image", image);
             }
 
             const response = await api.post("/articles", formData, {
@@ -65,6 +84,7 @@ const CreateArticle = () => {
             }
         } catch (err: any) {
             setError(err.response?.data?.message || "Something went wrong.");
+            toast.error("Something went wrong.")
         } finally {
             setLoading(false);
         }
@@ -74,7 +94,7 @@ const CreateArticle = () => {
         <RoleGuard allowedRoles={["admin"]}>
             <div className="min-h-[calc(100vh-64px)] bg-gray-50/50 py-12 px-4">
                 <div className="max-w-3xl mx-auto">
-                    
+
                     <div className="flex items-center gap-3 mb-8">
                         <div className="p-2 bg-blue-600 rounded-lg">
                             <PenLine className="text-white w-5 h-5" />
@@ -89,42 +109,57 @@ const CreateArticle = () => {
                         <CardHeader>
                             <CardTitle>Article Details</CardTitle>
                             <CardDescription>
-                                Give your article a compelling title, cover image, and content.
+                                Give your article a compelling title, category, and cover image.
                             </CardDescription>
                         </CardHeader>
                         <CardContent>
                             <form onSubmit={handleSubmit} className="space-y-6">
-                                
+
+                                {/* Title Field */}
+                                <div className="space-y-2">
+                                    <Label htmlFor="title" className="text-sm font-semibold">Headline</Label>
+                                    <Input
+                                        id="title"
+                                        placeholder="e.g., Breaking: Major Tech Breakthrough in 2026"
+                                        value={title}
+                                        onChange={(e) => setTitle(e.target.value)}
+                                        className="focus-visible:ring-blue-600 py-6 text-lg font-medium border-gray-200"
+                                        required
+                                    />
+                                </div>
+
                                 {/* Image Upload Field */}
                                 <div className="space-y-2">
-                                    <Label className="text-sm font-semibold">Cover Image</Label>
-                                    
+                                    <Label className="text-sm font-semibold flex items-center gap-2">
+                                        <ImageIcon className="w-4 h-4" /> Cover Image
+                                    </Label>
+
                                     {preview ? (
                                         <div className="relative group rounded-lg overflow-hidden border-2 border-dashed border-gray-200 aspect-video">
-                                            <img 
-                                                src={preview} 
-                                                alt="Preview" 
-                                                className="w-full h-full object-cover" 
+                                            <img
+                                                src={preview}
+                                                alt="Preview"
+                                                className="w-full h-full object-cover"
                                             />
                                             <button
                                                 type="button"
                                                 onClick={removeImage}
-                                                className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                                                className="absolute top-2 right-2 p-1.5 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity shadow-lg"
                                             >
                                                 <X className="w-4 h-4" />
                                             </button>
                                         </div>
                                     ) : (
-                                        <div 
+                                        <div
                                             onClick={() => fileInputRef.current?.click()}
-                                            className="flex flex-col items-center justify-center border-2 border-dashed border-gray-200 rounded-lg py-12 cursor-pointer hover:bg-gray-50 transition-colors"
+                                            className="flex flex-col items-center justify-center border-2 border-dashed border-gray-200 rounded-lg py-12 cursor-pointer hover:bg-gray-50 transition-colors bg-white"
                                         >
                                             <ImageIcon className="w-10 h-10 text-gray-400 mb-2" />
-                                            <p className="text-sm text-gray-500">Click to upload a header image</p>
+                                            <p className="text-sm text-gray-500 font-medium">Click to upload header image</p>
                                             <p className="text-xs text-gray-400 mt-1">PNG, JPG, WebP up to 5MB</p>
                                         </div>
                                     )}
-                                    <Input 
+                                    <Input
                                         type="file"
                                         ref={fileInputRef}
                                         onChange={handleImageChange}
@@ -133,26 +168,37 @@ const CreateArticle = () => {
                                     />
                                 </div>
 
+                                {/* Category Dropdown */}
                                 <div className="space-y-2">
-                                    <Label htmlFor="title" className="text-sm font-semibold">Headline</Label>
-                                    <Input 
-                                        id="title"
-                                        placeholder="e.g., Breaking: Major Tech Breakthrough in 2026"
-                                        value={title}
-                                        onChange={(e) => setTitle(e.target.value)}
-                                        className="focus-visible:ring-blue-600 py-6 text-lg font-medium"
-                                        required
-                                    />
+                                    <Label className="text-sm font-semibold flex items-center gap-2">
+                                        <Tags className="w-4 h-4" /> Category
+                                    </Label>
+                                    <Select
+                                        value={category}
+                                        onValueChange={setCategory}
+                                    >
+                                        <SelectTrigger className="w-full focus:ring-blue-600 border-gray-200">
+                                            <SelectValue placeholder="Select a category" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {CATEGORIES.map((cat) => (
+                                                <SelectItem key={cat} value={cat}>
+                                                    {cat}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
                                 </div>
 
+                                {/* Content Field */}
                                 <div className="space-y-2">
                                     <Label htmlFor="content" className="text-sm font-semibold">Content Body</Label>
-                                    <Textarea 
+                                    <Textarea
                                         id="content"
                                         placeholder="Tell your story here..."
                                         value={content}
                                         onChange={(e) => setContent(e.target.value)}
-                                        className="min-h-[300px] focus-visible:ring-blue-600 resize-none leading-relaxed"
+                                        className="min-h-[300px] focus-visible:ring-blue-600 resize-none leading-relaxed border-gray-200"
                                         required
                                     />
                                 </div>
@@ -167,9 +213,9 @@ const CreateArticle = () => {
                                     <Button type="button" variant="ghost" onClick={() => router.back()}>
                                         Cancel
                                     </Button>
-                                    <Button 
-                                        type="submit" 
-                                        className="text-white bg-blue-600 hover:bg-blue-800 px-8" 
+                                    <Button
+                                        type="submit"
+                                        className="text-white bg-blue-600 hover:bg-blue-700 px-8 font-bold"
                                         disabled={loading}
                                     >
                                         {loading ? (

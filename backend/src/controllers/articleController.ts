@@ -2,12 +2,13 @@ import type { Request, Response } from "express";
 import AppDataSource from "../config/db.js";
 import { Article } from "../Entities/Article.js";
 import { User } from "../Entities/User.js";
+import type { FindOptionsWhere } from "typeorm";
 
 
 export const createArticle = async (req: Request, res: Response) => {
     try {
-        const { title, content } = req.body;
-        const imageUrl = req.file ? req.file.path : null; 
+        const { title, content, category } = req.body;
+        const imageUrl = req.file ? req.file.path : null;
         const authorId = req.user?.id;
 
         const articleRepository = AppDataSource.getRepository(Article);
@@ -17,12 +18,13 @@ export const createArticle = async (req: Request, res: Response) => {
         if (!userExists) {
             return res.status(404).json({ status: "fail", message: "User not found" });
         }
-        
-        const article = articleRepository.create({ 
-            title, 
-            content, 
-            author: userExists ,
+
+        const article = articleRepository.create({
+            title,
+            content,
+            author: userExists,
             imageUrl,
+            category: category || "General",
         });
 
         await articleRepository.save(article);
@@ -34,25 +36,29 @@ export const createArticle = async (req: Request, res: Response) => {
 
     } catch (error) {
         console.error(error);
-        return res.status(500).json({ 
-            status: "error", 
-            message: "Internal server error" 
+        return res.status(500).json({
+            status: "error",
+            message: "Internal server error"
         });
     }
 }
 
 export const getAllArticles = async (req: Request, res: Response) => {
     try {
+        const { category } = req.query;
+
+        let whereClause: FindOptionsWhere<Article> = {};
+
+        if (category) {
+
+            whereClause.category = category as Article['category'];
+        }
+
         const articles = await Article.find({
-            relations: [
-                "author", 
-                "likes", 
-                "likes.user", 
-                "comments", 
-                "comments.user"
-            ],
-            order: { id: "DESC" }
-        });
+            where: whereClause,
+            relations: ["author", "likes", "likes.user", "comments", "comments.user"],
+            order: { createdAt: "DESC" }
+        });;
 
         const articleData = articles.map(article => ({
             id: article.id,
@@ -60,9 +66,10 @@ export const getAllArticles = async (req: Request, res: Response) => {
             content: article.content,
             imageUrl: article.imageUrl,
             createdAt: article.createdAt,
+            category: article.category,
             author: {
-                id: article.author.id,
-                name: article.author.name
+                id: article.author?.id,
+                name: article.author?.name || "Anonymous"
             },
             likes: article.likes?.map(like => ({
                 userId: like.user?.id,
@@ -71,7 +78,8 @@ export const getAllArticles = async (req: Request, res: Response) => {
             comments: article.comments?.map((comment: any) => ({
                 id: comment.id,
                 message: comment.message,
-                userName: comment.user?.name || "Anonymous"
+                userName: comment.user?.name || "Anonymous",
+                createdAt: comment.createdAt
             })) || []
         }));
 
@@ -81,23 +89,17 @@ export const getAllArticles = async (req: Request, res: Response) => {
         });
     } catch (error) {
         console.error("Fetch Articles Error:", error);
-        res.status(500).json({ error: "Error fetching articles" });
+        res.status(500).json({ status: "error", message: "Error fetching articles" });
     }
 }
 
-
 export const getArticleById = async (req: Request, res: Response) => {
     try {
-
         const { articleId } = req.params;
 
         const article = await Article.findOne({
             where: { id: Number(articleId) },
-            relations: {
-                author: true,
-                likes: { user: true },
-                comments: true,
-            },
+            relations: ["author", "likes", "likes.user", "comments"],
         });
 
         if (!article) {
@@ -108,18 +110,17 @@ export const getArticleById = async (req: Request, res: Response) => {
             status: "success",
             data: {
                 ...article,
+                category: article.category, 
                 likedBy: article.likes.map(like => ({
-                    id: like.user.id,
-                    name: like.user.name
+                    id: like.user?.id,
+                    name: like.user?.name
                 })),
                 likesCount: article.likes.length,
                 commentsCount: article.comments.length
             }
         });
-
     } catch (error) {
-        res.status(400).json({ error: "Error fetching the articles" })
-
+        res.status(400).json({ error: "Error fetching the article" });
     }
 }
 
@@ -145,7 +146,7 @@ export const updateArticles = async (req: Request, res: Response) => {
             })
         }
 
-        if (existingArticle.author.id !== userId && userRole === "admin") {
+        if (existingArticle.author.id !== userId && userRole !== "admin") {
             return res.status(403).json({
                 error: "You don't have permission to update this post"
             });
