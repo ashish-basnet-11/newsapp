@@ -35,8 +35,8 @@ export const Navbar = () => {
                         ) : user ? (
                             <div className="flex items-center gap-6">
                                 {user.role === "admin" && (
-                                    <Link href="/create" className="text-sm font-medium text-gray-600 hover:text-blue-600 transition-colors">
-                                        Write Article
+                                    <Link href="/admin" className="text-sm font-medium text-gray-600 hover:text-blue-600 transition-colors">
+                                        Admin Dashboard
                                     </Link>
                                 )}
                                 <div className="h-6 w-px bg-gray-200"></div>
