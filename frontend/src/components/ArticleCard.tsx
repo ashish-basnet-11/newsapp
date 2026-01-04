@@ -1,44 +1,62 @@
-interface ArticleProps {
-  article: {
-    id: number;
-    title: string;
-    content: string;
-    author: { name: string };
-    likes: { userId: number; userName: string }[];
-    comments: { id: number; message: string; userName: string }[]; // Updated here
-  };
-}
-export default function ArticleCard({ article }: ArticleProps) {
+import Image from "next/image";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+
+const ArticleCard = ({ article }: { article: any }) => {
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow flex flex-col h-full">
-      {/* Show Author instead of Date */}
-      <div className="flex items-center gap-2 mb-3">
-        <div className="w-7 h-7 bg-blue-100 rounded-full flex items-center justify-center text-xs font-bold text-blue-600">
-          {article.author.name.charAt(0).toUpperCase()}
+    <Card className="overflow-hidden hover:shadow-lg transition-shadow duration-300 flex flex-col h-full">
+      {/* Article Image */}
+      <div className="relative w-full h-48 bg-gray-100">
+        {article.imageUrl ? (
+          <Image
+            src={article.imageUrl}
+            alt={article.title}
+            fill
+            className="object-cover"
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+          />
+        ) : (
+          <div className="flex items-center justify-center h-full text-gray-400">
+            <span className="text-xs italic">No cover image</span>
+          </div>
+        )}
+      </div>
+
+      <CardHeader className="p-4">
+        <div className="flex justify-between items-start mb-2">
+          <Badge variant="secondary" className="capitalize text-[10px]">
+            {article.category || "General"}
+          </Badge>
+          <span className="text-[10px] text-gray-400">
+            {article.createdAt
+              ? new Date(article.createdAt).toLocaleDateString(undefined, {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric'
+              })
+              : "No date"}
+          </span>
         </div>
-        <span className="text-xs font-medium text-gray-500 uppercase tracking-wider">
-          {article.author.name}
-        </span>
-      </div>
-      
-      <h2 className="text-xl font-bold text-gray-900 mb-3 line-clamp-2">
-        {article.title}
-      </h2>
+        <CardTitle className="line-clamp-2 text-lg leading-tight">
+          {article.title}
+        </CardTitle>
+      </CardHeader>
 
-      <p className="text-gray-600 text-sm leading-relaxed mb-6 line-clamp-4 flex-grow">
-        {article.content}
-      </p>
-
-      <div className="pt-4 border-t border-gray-100 mt-auto flex justify-between items-center">
-        <button className="text-blue-600 text-sm font-bold hover:text-blue-800 transition-colors">
-          Read More →
-        </button>
-        
-        {/* Simple Like Counter Placeholder */}
-        <span className="text-gray-400 text-xs">
-          {article.likes?.length || 0} Likes
-        </span>
-      </div>
-    </div>
+      <CardContent className="p-4 pt-0 mt-auto">
+        <p className="text-sm text-gray-600 line-clamp-3 mb-4">
+          {article.content}
+        </p>
+        <div className="flex items-center gap-2">
+          <div className="w-6 h-6 rounded-full bg-blue-100 flex items-center justify-center text-[10px] font-bold text-blue-700">
+            {article.author?.name?.charAt(0) || "A"}
+          </div>
+          <span className="text-xs font-medium text-gray-700">
+            {article.author?.name || "Unknown Author"}
+          </span>
+        </div>
+      </CardContent>
+    </Card>
   );
-}
+};
+
+export default ArticleCard;
