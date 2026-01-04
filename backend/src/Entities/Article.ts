@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, BaseEntity, ManyToOne, OneToMany, type Relation } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, BaseEntity, ManyToOne, OneToMany, type Relation, CreateDateColumn, UpdateDateColumn } from 'typeorm';
 import { User } from './User.js';
 import { Like } from './Like.js';
 
@@ -12,6 +12,15 @@ export class Article extends BaseEntity {
 
     @Column({ type: "text" })
     content!: string;
+
+    @Column({ type: "varchar", nullable: true }) 
+    imageUrl?: string | null; 
+
+    @CreateDateColumn()
+    createdAt!: Date;
+
+    @UpdateDateColumn()
+    updatedAt!: Date;
 
     @ManyToOne(() => User, (user) => user.articles)
     author!: User;

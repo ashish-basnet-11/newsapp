@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
 import api from "@/lib/api";
 import { useAuth } from '@/context/AuthContext';
+import { toast } from 'sonner';
 
 const LoginPage = () => {
     const [email, setEmail] = useState("");
@@ -22,8 +23,8 @@ const LoginPage = () => {
             const response = await api.post("/auth/login", { email, password });
 
             if (response.data.status === "success") {
-                // console.log(" Response:", response.data);
-                login(response.data.data);
+                toast.success("Logged in successfully")
+                login(response.data.user);
                 router.push("/");
                 router.refresh();
             }

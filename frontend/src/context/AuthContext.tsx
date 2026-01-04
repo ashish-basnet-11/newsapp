@@ -1,6 +1,7 @@
 "use client";
 import { createContext, useContext, useEffect, useState } from "react";
 import api from "@/lib/api";
+import { toast } from "sonner";
 
 interface User {
     id: number,
@@ -44,6 +45,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const logout = async () => {
         try {
             await api.post("/auth/logout");
+            toast.success("Logged out successfully")
+
             setUser(null)
         } catch (error) {
             console.error("Logout failed", error);
@@ -52,11 +55,16 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     const login = (userData: User) => {
         setUser(userData);
+        setLoading(false);
     };
 
     useEffect(() => {
-        checkAuth();
-    }, [])
+        if (!user) {
+            checkAuth();
+        } else {
+            setLoading(false);
+        }
+    }, []);
 
     return (
         <AuthContext.Provider value={{ user, loading, checkAuth, logout, login }}>

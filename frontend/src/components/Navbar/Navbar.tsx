@@ -6,17 +6,6 @@ import Link from "next/link";
 export const Navbar = () => {
     const { user, logout, loading } = useAuth();
 
-    if (loading) {
-        return (
-            <nav className="h-16 border-b border-gray-100 bg-white flex items-center px-6">
-                <div className="max-w-7xl mx-auto w-full flex justify-between">
-                    <div className="h-6 w-24 bg-gray-100 animate-pulse rounded"></div>
-                    <div className="h-6 w-32 bg-gray-100 animate-pulse rounded"></div>
-                </div>
-            </nav>
-        );
-    }
-
     return (
         <nav className="h-16 border-b border-gray-100 bg-white/80 backdrop-blur-md sticky top-0 z-50 px-6">
             <div className="max-w-7xl mx-auto h-full flex justify-between items-center">
@@ -37,7 +26,11 @@ export const Navbar = () => {
                         Explore
                     </Link>
 
-                    {user ? (
+                    {loading && !user ? (
+                        <div className="flex items-center gap-4">
+                            <div className="h-8 w-24 bg-gray-100 animate-pulse rounded-lg"></div>
+                        </div>
+                    ) : user ? (
                         <div className="flex items-center gap-6">
                             {user.role === "admin" && (
                                 <Link href="/create" className="text-sm font-medium text-gray-600 hover:text-blue-600 transition-colors">
@@ -50,7 +43,9 @@ export const Navbar = () => {
                             <div className="flex items-center gap-3">
                                 <div className="text-right">
                                     <p className="text-xs font-bold text-gray-900 leading-none">{user.name}</p>
-                                    <p className="text-[10px] text-gray-500 uppercase tracking-tighter">{user.role}</p>
+                                    <p className="text-[10px] text-gray-500 uppercase tracking-tighter">
+                                        {user.role}
+                                    </p>
                                 </div>
                                 <button
                                     onClick={logout}
