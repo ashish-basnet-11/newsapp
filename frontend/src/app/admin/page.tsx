@@ -1,8 +1,14 @@
-import React from 'react'
+import Link from 'next/link'
 
 const page = () => {
   return (
-    <div>Admin Page</div>
+    <div>
+      <div>
+        Admin Page
+      </div>
+      <Link href="/admin/dashboard" className="hover:text-blue-400">Admin Dashboard</Link>
+
+    </div>
   )
 }
 
