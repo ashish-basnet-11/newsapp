@@ -3,6 +3,7 @@
 import { useAuth } from "@/context/AuthContext";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { Button } from "../ui/button";
 
 const categories = [
     "Home", "General", "Sport", "Business", "Innovation", "Health",
@@ -20,11 +21,11 @@ export const Navbar = () => {
                 <div className="max-w-7xl mx-auto h-full flex justify-between items-center">
                     {/* Brand Logo */}
                     <Link href="/" className="flex justify-center items-center gap-2">
-                        <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+                        <div className="w-8 h-8 bg-gray-900 rounded-lg flex items-center justify-center text-white">
                             <span className="text-white font-bold">T</span>
                         </div>
                         <span className="font-bold text-xl tracking-tight text-gray-900">
-                            The<span className="text-blue-600">Post</span>
+                            The<span className="text-gray-600">Post</span>
                         </span>
                     </Link>
 
@@ -35,7 +36,7 @@ export const Navbar = () => {
                         ) : user ? (
                             <div className="flex items-center gap-6">
                                 {user.role === "admin" && (
-                                    <Link href="/admin/dashboard" className="text-sm font-medium text-gray-600 hover:text-blue-600 transition-colors">
+                                    <Link href="/admin/dashboard" className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors">
                                         Admin Dashboard
                                     </Link>
                                 )}
@@ -47,12 +48,15 @@ export const Navbar = () => {
                                             {user.role}
                                         </p>
                                     </div>
-                                    <button
+                                    <Button
+                                        type="button"
+                                        variant="destructive"
                                         onClick={logout}
-                                        className="bg-gray-900 text-white px-4 py-2 rounded-lg text-xs font-bold hover:bg-gray-800 transition-all shadow-sm"
+                                        className="bg-red-600 hover:bg-red-700 text-white font-bold rounded-lg px-4 py-2 transition"
                                     >
-                                        Logout
-                                    </button>
+                                        Log Out
+                                    </Button>
+
                                 </div>
                             </div>
                         ) : (
@@ -85,16 +89,16 @@ export const Navbar = () => {
                                     <Link
                                         href={href}
                                         className={`block py-3 text-sm font-bold whitespace-nowrap transition-colors ${isActive
-                                                ? "text-blue-600"
-                                                : "text-gray-800 hover:text-blue-600"
+                                            ? "text-gray-600"
+                                            : "text-gray-800 hover:text-gray-600"
                                             }`}
                                     >
                                         {cat}
                                     </Link>
 
                                     <div className={`absolute bottom-0 left-0 right-0 h-1 bg-black transition-transform origin-left ${isActive
-                                            ? "scale-x-100"
-                                            : "scale-x-0 group-hover:scale-x-100"
+                                        ? "scale-x-100"
+                                        : "scale-x-0 group-hover:scale-x-100"
                                         }`} />
                                 </li>
                             );

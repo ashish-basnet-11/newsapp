@@ -47,7 +47,7 @@ const ArticleCard = ({ article }: { article: any }) => {
           {article.content}
         </p>
         <div className="flex items-center gap-2">
-          <div className="w-6 h-6 rounded-full bg-blue-100 flex items-center justify-center text-[10px] font-bold text-blue-700">
+          <div className="w-6 h-6 rounded-full bg-gray-100 flex items-center justify-center text-[10px] font-bold text-gray-700">
             {article.author?.name?.charAt(0) || "A"}
           </div>
           <span className="text-xs font-medium text-gray-700">
