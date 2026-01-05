@@ -6,72 +6,76 @@ import { Comment } from "../Entities/Comment.js";
 
 export const commentArticle = async (req: Request, res: Response) => {
     try {
-
         const { articleId } = req.params;
-
-        const userId = req.user?.id
-
+        const userId = req.user?.id;
         const { message } = req.body;
 
+        if (!message) return res.status(400).json({ error: "Message content is required" });
 
-        const article = await Article.findOneBy({
-            id: Number(articleId)
-        })
-
-        if (!article) {
-            res.status(404).json({ error: "Article doesn't exist" })
-        }
+        const article = await Article.findOneBy({ id: Number(articleId) });
+        if (!article) return res.status(404).json({ error: "Article doesn't exist" });
 
         const commentRepo = AppDataSource.getRepository(Comment);
-
-
         const newComment = commentRepo.create({
             message,
             user: { id: Number(userId) },
             article: { id: Number(articleId) }
-        })
+        });
 
-        await commentRepo.save(newComment)
+        await commentRepo.save(newComment);
 
         return res.status(201).json({
             status: "success",
-            data: {
-                authorId: { id: userId },
-                comment: newComment.message
-            }
-        })
-
-
+            data: newComment
+        });
     } catch (error) {
-        res.status(400).json({ error: "Error creating a comment" })
+        console.error(error);
+        res.status(400).json({ error: "Error creating a comment" });
     }
-}
+};
+
+export const getCommentsByArticle = async (req: Request, res: Response) => {
+    try {
+        const { articleId } = req.params;
+
+        const comments = await Comment.find({
+            where: { article: { id: Number(articleId) } },
+            relations: { user: true },
+            order: { createdAt: "DESC" }
+        });
+
+        return res.json({
+            status: "success",
+            count: comments.length,
+            data: comments.map(c => ({
+                id: c.id,
+                message: c.message,
+                createdAt: c.createdAt,
+                user: { id: c.user.id, name: c.user.name }
+            }))
+        });
+    } catch (error) {
+        res.status(500).json({ error: "Error fetching comments" });
+    }
+};
 
 export const getAllComments = async (req: Request, res: Response) => {
     try {
+        const { articleId } = req.params;
+
         const comments = await Comment.find({
-            relations: {
-                user: true,
-                article: true
-            },
-            order: {
-                id: "DESC"
-            }
+            where: { article: { id: Number(articleId) } },
+            relations: { user: true },
+            order: { id: "DESC" }
         });
+
 
         return res.json({
             status: "Success",
             count: comments.length,
-            data: comments.map(comment => ({
-                id: comment.id,
-                user: {
-                    id: comment.user.id,
-                    name: comment.user.name
-                },
-                message: comment.message,
-                articleTitle: comment.article?.title || "Deleted Article"
-            }))
+            data: comments
         });
+
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: "Error fetching comments" });
