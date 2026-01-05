@@ -96,6 +96,7 @@ export const getAllArticles = async (req: Request, res: Response) => {
 export const getArticleById = async (req: Request, res: Response) => {
     try {
         const { articleId } = req.params;
+        const userId = req.user?.id;
 
         const article = await Article.findOne({
             where: { id: Number(articleId) },
@@ -106,15 +107,13 @@ export const getArticleById = async (req: Request, res: Response) => {
             return res.status(404).json({ message: "Article not found" });
         }
 
+        const isLikedByMe = article.likes.some(like => like.user?.id === Number(userId));
+
         return res.status(200).json({
             status: "success",
             data: {
                 ...article,
-                category: article.category, 
-                likedBy: article.likes.map(like => ({
-                    id: like.user?.id,
-                    name: like.user?.name
-                })),
+                isLikedByMe: isLikedByMe, 
                 likesCount: article.likes.length,
                 commentsCount: article.comments.length
             }
