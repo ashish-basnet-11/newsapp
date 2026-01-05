@@ -3,10 +3,11 @@ import { notFound } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
 import LikeButton from "../LikeButton";
 import { cookies } from "next/headers";
+import CommentSection from "../commentSection";
 
 async function getArticle(id: string) {
   const API_URL = process.env.NEXT_PUBLIC_API_URL;
-  
+
   // Get cookies from the browser's request to Next.js
   const cookieStore = await cookies();
   const cookieHeader = cookieStore.toString();
@@ -16,13 +17,13 @@ async function getArticle(id: string) {
       cache: 'no-store',
       headers: {
         // Forward the cookies to your Express backend
-        "Cookie": cookieHeader, 
+        "Cookie": cookieHeader,
       }
     });
 
     if (!res.ok) return null;
     const result = await res.json();
-    return result.data; 
+    return result.data;
   } catch (error) {
     console.error("Fetch error:", error);
     return null;
@@ -82,11 +83,17 @@ export default async function ArticleDetailsPage({
           {article.content}
         </div>
         <div className="mt-12 pt-6 border-t">
-          {/* CLIENT ISLANDS */}
-          <LikeButton
+          <div className="flex items-center justify-center mb-8">
+            <LikeButton
+              articleId={id}
+              initialLikes={article.likesCount || 0}
+              isInitiallyLiked={article.isLikedByMe || false}
+            />
+          </div>
+
+          <CommentSection
             articleId={id}
-            initialLikes={article.likesCount || article.likes?.length || 0}
-            isInitiallyLiked={article.isLikedByMe || false}
+            initialComments={article.comments || []}
           />
         </div>
       </div>

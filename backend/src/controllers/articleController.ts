@@ -100,7 +100,7 @@ export const getArticleById = async (req: Request, res: Response) => {
 
         const article = await Article.findOne({
             where: { id: Number(articleId) },
-            relations: ["author", "likes", "likes.user", "comments"],
+            relations: ["author", "likes", "likes.user", "comments", "comments.user"],
         });
 
         if (!article) {
