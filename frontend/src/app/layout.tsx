@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "ThePost | Admin Panel",
+  title: "ThePost | News",
   description: "Your modern news destination",
 };
 

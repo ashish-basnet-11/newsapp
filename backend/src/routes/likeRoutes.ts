@@ -1,11 +1,16 @@
-import express from 'express'
+import express from 'express';
 import { protect } from '../middleware/authMidlleware.js';
-import { getAllLikes, toggleLike } from '../controllers/likeController.js';
+import { getAllLikes, toggleLike, getLikeStatus } from '../controllers/likeController.js';
 
 const router = express.Router();
 
-router.post("/:articleId", protect, toggleLike)
-router.get("/:articleId", getAllLikes)
+// Get the list of people who liked this article (Public)
+router.get("/:articleId", getAllLikes);
 
+// Check if the current user likes this article (Private)
+router.get("/:articleId/status", protect, getLikeStatus);
+
+// Toggle the like (Private)
+router.post("/:articleId", protect, toggleLike);
 
 export default router;

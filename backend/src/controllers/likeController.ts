@@ -2,67 +2,81 @@ import type { Request, Response } from "express";
 import { Article } from "../Entities/Article.js";
 import { Like } from "../Entities/Like.js";
 
+// 1. Toggle Like (Remains mostly the same, but fixed a tiny typo in userId)
 export const toggleLike = async (req: Request, res: Response) => {
     try {
         const { articleId } = req.params;
+        const userId = req.user?.id; // Ensure your 'protect' middleware sets this
 
-        const userId = req.user?.id
-
-        const article = await Article.findOneBy({ id: Number(articleId) })
-
+        const article = await Article.findOneBy({ id: Number(articleId) });
         if (!article) {
-            return res.status(400).json({ error: "Article doesn't exist" })
+            return res.status(404).json({ error: "Article doesn't exist" });
         }
 
         const existingLike = await Like.findOne({
             where: {
-                user: {id: Number(userId)},
-                article: {id: Number (articleId)}
+                user: { id: Number(userId) },
+                article: { id: Number(articleId) }
             }
-        })
+        });
 
         if (existingLike) {
             await existingLike.remove();
-            return res.json({ message: "Unliked article" });
-        } 
-        else
-        {
+            return res.json({ status: "success", message: "Unliked", isLiked: false });
+        } else {
             const newLike = Like.create({
                 user: { id: Number(userId) },
                 article: { id: Number(articleId) }
-            })
-
+            });
             await newLike.save();
-            return res.status(201).json({ Success: "Article liked" })
+            return res.status(201).json({ status: "success", message: "Liked", isLiked: true });
         }
-
     } catch (error) {
         console.error(error);
         return res.status(500).json({ error: "Internal server error" });
     }
-}
+};
 
-export const getAllLikes = async (req: Request, res: Response) => {
-    
-    const likes = await Like.find({
-        relations: {
-            user: true,
-            article: true
-        },
+// 2. NEW: Check if the specific user likes this specific article
+export const getLikeStatus = async (req: Request, res: Response) => {
+    try {
+        const { articleId } = req.params;
+        const userId = req.user?.id;
 
-        order: {
-            id: "DESC"
+        if (!userId) {
+            return res.json({ isLiked: false });
         }
-    })
 
+        const existingLike = await Like.findOne({
+            where: {
+                user: { id: Number(userId) },
+                article: { id: Number(articleId) }
+            }
+        });
+
+        return res.json({ isLiked: !!existingLike });
+    } catch (error) {
+        return res.status(500).json({ error: "Error checking status" });
+    }
+};
+
+// 3. Updated: Get all likes FOR A SPECIFIC ARTICLE
+export const getAllLikes = async (req: Request, res: Response) => {
+    const { articleId } = req.params;
+
+    const likes = await Like.find({
+        where: { article: { id: Number(articleId) } }, // FILTERED!
+        relations: ["user"],
+        order: { id: "DESC" }
+    });
 
     res.json({
         status: "Success",
-        data : {
+        data: {
             likes: likes.map(like => ({
-                userName: {name: (like.user as any).name},
+                userName: (like.user as any).name,
             })),
             count: likes.length
         }
-    })
-}
+    });
+};
