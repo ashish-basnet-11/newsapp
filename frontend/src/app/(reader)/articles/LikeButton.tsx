@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext"; 
 import api from "@/lib/api"; 
+import { toast } from "sonner";
 
 // Updated Interface to include isInitiallyLiked
 interface LikeButtonProps {
@@ -30,7 +31,6 @@ export default function LikeButton({
     setIsLiked(isInitiallyLiked);
   }, [initialLikes, isInitiallyLiked]);
 
-  // 2. Client-side double check (optional but good for JWT/Cookie sync)
   useEffect(() => {
     const fetchLikedStatus = async () => {
       if (!user) return;
@@ -46,7 +46,7 @@ export default function LikeButton({
 
   const handleLike = async () => {
     if (!user) {
-      alert("Please login to like articles!");
+      toast.error("Please login to like articles!");
       return;
     }
 

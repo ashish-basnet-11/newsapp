@@ -1,14 +1,13 @@
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
-import LikeButton from "../LikeButton";
 import { cookies } from "next/headers";
+import LikeButton from "../LikeButton";
 import CommentSection from "../commentSection";
 
 async function getArticle(id: string) {
-  const API_URL = process.env.NEXT_PUBLIC_API_URL;
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5001";
 
-  // Get cookies from the browser's request to Next.js
   const cookieStore = await cookies();
   const cookieHeader = cookieStore.toString();
 
@@ -16,7 +15,6 @@ async function getArticle(id: string) {
     const res = await fetch(`${API_URL}/api/articles/${id}`, {
       cache: 'no-store',
       headers: {
-        // Forward the cookies to your Express backend
         "Cookie": cookieHeader,
       }
     });
@@ -29,12 +27,13 @@ async function getArticle(id: string) {
     return null;
   }
 }
+
 export default async function ArticleDetailsPage({
   params
 }: {
   params: Promise<{ id: string }>
 }) {
-  const { id } = await params;
+  const { id } = await params; // IMPORTANT: Await params in Next.js 15
   const article = await getArticle(id);
 
   if (!article) {
@@ -43,7 +42,6 @@ export default async function ArticleDetailsPage({
 
   return (
     <article className="max-w-4xl mx-auto py-12 px-4 sm:px-6">
-      {/* Header Info */}
       <div className="space-y-4 text-center mb-10">
         <Badge variant="outline" className="capitalize">
           {article.category || "General"}
@@ -66,22 +64,23 @@ export default async function ArticleDetailsPage({
         </div>
       </div>
 
-      {/* Hero Image */}
-      <div className="relative aspect-video w-full overflow-hidden rounded-xl bg-gray-100 mb-10 border">
-        <Image
-          src={article.imageUrl}
-          alt={article.title}
-          fill
-          className="object-cover"
-          priority
-        />
-      </div>
+      {article.imageUrl && (
+        <div className="relative aspect-video w-full overflow-hidden rounded-xl bg-gray-100 mb-10 border">
+          <Image
+            src={article.imageUrl}
+            alt={article.title}
+            fill
+            className="object-cover"
+            priority
+          />
+        </div>
+      )}
 
-      {/* Article Content */}
       <div className="prose prose-blue dark:prose-invert max-w-none">
-        <div className="whitespace-pre-wrap leading-relaxed">
+        <div className="whitespace-pre-wrap leading-relaxed text-lg">
           {article.content}
         </div>
+        
         <div className="mt-12 pt-6 border-t">
           <div className="flex items-center justify-center mb-8">
             <LikeButton

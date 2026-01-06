@@ -1,8 +1,8 @@
 "use client"
 
-import { AppSidebar } from "@/components/app-sidebar"
+import { AppSidebar } from "@/components/dashboard/app-sidebar"
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar"
-import { SiteHeader } from "@/components/site-header"
+import { SiteHeader } from "@/components/dashboard/site-header"
 import { RoleGuard } from "@/components/guards/RoleGuard"
 
 

@@ -1,4 +1,8 @@
 import { DataSource } from "typeorm";
+import { User } from "../Entities/User.js";
+import { Article } from "../Entities/Article.js";
+import { Like } from "../Entities/Like.js";
+import { Comment } from "../Entities/Comment.js";
 
 
 const AppDataSource = new DataSource({
@@ -10,8 +14,7 @@ const AppDataSource = new DataSource({
     database: "news_db",
     logging: true,
     synchronize: true,
-    entities: ["src/Entities/**/*.ts"]
-
+    entities: [User, Article, Like, Comment],
 })
 
 export default AppDataSource;

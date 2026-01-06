@@ -35,28 +35,41 @@ export const Navbar = () => {
                             <div className="h-8 w-24 bg-gray-100 animate-pulse rounded-lg"></div>
                         ) : user ? (
                             <div className="flex items-center gap-6">
-                                {user.role === "admin" && (
-                                    <Link href="/admin/dashboard" className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors">
-                                        Admin Dashboard
-                                    </Link>
-                                )}
-                                <div className="h-6 w-px bg-gray-200"></div>
-                                <div className="flex items-center gap-3">
-                                    <div className="text-right">
-                                        <p className="text-xs font-bold text-gray-900 leading-none">{user.name}</p>
-                                        <p className="text-[10px] text-gray-500 uppercase tracking-tighter">
-                                            {user.role}
-                                        </p>
-                                    </div>
-                                    <Button
-                                        type="button"
-                                        variant="destructive"
-                                        onClick={logout}
-                                        className="bg-red-600 hover:bg-red-700 text-white font-bold rounded-lg px-4 py-2 transition"
-                                    >
-                                        Log Out
-                                    </Button>
+                                <div className="flex items-center gap-6">
+                                    {user.role === "admin" && (
+                                        <Link
+                                            href="/admin/dashboard"
+                                            className="text-sm font-semibold text-gray-500 hover:text-red-600 transition-colors flex items-center gap-2"
+                                        >
+                                            <div className="size-1.5 rounded-full bg-red-500 animate-pulse" />
+                                            Admin Dashboard
+                                        </Link>
+                                    )}
 
+                                    {/* Vertical Separator */}
+                                    <div className="h-8 w-px bg-gray-200 hidden sm:block"></div>
+
+                                    <div className="flex items-center gap-4">
+                                        {/* User Identity */}
+                                        <div className="flex flex-col items-end leading-tight">
+                                            <p className="text-sm font-bold text-gray-900 tracking-tight">
+                                                {user.name}
+                                            </p>
+                                            <p className="text-[10px] font-medium text-gray-400 uppercase tracking-widest">
+                                                {user.role}
+                                            </p>
+                                        </div>
+
+                                        {/* Action Button */}
+                                        <Button
+                                            type="button"
+                                            variant="ghost"
+                                            onClick={logout}
+                                            className="h-9 px-4 text-xs font-bold uppercase tracking-wider text-red-600 hover:bg-red-50 hover:text-red-700 border border-transparent hover:border-red-100 rounded-full transition-all duration-200"
+                                        >
+                                            Log Out
+                                        </Button>
+                                    </div>
                                 </div>
                             </div>
                         ) : (
