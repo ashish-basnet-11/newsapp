@@ -5,6 +5,7 @@ import authRoutes from './routes/authRoutes.js'
 import likeRoutes from './routes/likeRoutes.js'
 import articleRoutes from './routes/articleRoutes.js'
 import commentRoutes from './routes/commentRoutes.js'
+import statsRoutes from './routes/statsRoutes.js'
 import cookieParser from "cookie-parser";
 import rateLimit from 'express-rate-limit'
 import cors from 'cors'
@@ -55,6 +56,7 @@ app.use("/api/auth", authRoutes)
 app.use("/api/articles", articleRoutes)
 app.use("/api/likes", likeRoutes)
 app.use("/api/comments", commentRoutes)
+app.use("/api/stats", statsRoutes);
 
 
 const PORT = 5001

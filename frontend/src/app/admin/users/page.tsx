@@ -14,6 +14,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { IconDots, IconTrash, IconUserEdit } from "@tabler/icons-react";
 import api from "@/lib/api";
+import { format } from "date-fns";
 
 interface User {
   id: number;
@@ -88,8 +89,12 @@ const UsersPage = () => {
                     </div>
                   </TableCell>
                   <TableCell>{getRoleBadge(user.role)}</TableCell>
-                  <TableCell className="text-sm text-muted-foreground">
-                    {new Date(user.createdAt).toLocaleDateString()}
+                  <TableCell className="text-sm text-muted-foreground font-medium">
+                    {user.createdAt ? (
+                      format(new Date(user.createdAt), "MMM d, yyyy")
+                    ) : (
+                      "N/A"
+                    )}
                   </TableCell>
                   <TableCell className="text-right">
                     <div className="flex justify-end gap-2">
