@@ -149,7 +149,7 @@ export const getAllUsers = async (req: Request, res: Response) => {
         const UserRepo = AppDataSource.getRepository(User)
 
         const users = await UserRepo.find({
-            select: ["id", "name", "email", "role"],
+            select: ["id", "name", "email", "role", "createdAt"],
             // order: {
             //     createdAt: "DESC"
             // }

@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, BaseEntity, OneToMany, type Relation } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, BaseEntity, OneToMany, type Relation, CreateDateColumn } from 'typeorm';
 import { Article } from './Article.js';
 import { Like } from './Like.js';
 
@@ -22,6 +22,9 @@ export class User extends BaseEntity {
         default: "user"
     })
     role!: string;
+
+    @CreateDateColumn()
+    createdAt!: Date;
 
     @OneToMany("Article", "author")
     articles!: Relation<Article>[];
