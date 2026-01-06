@@ -48,17 +48,23 @@ export default function CommentSection({
             <h3 className="text-2xl font-bold">Comments ({initialComments.length})</h3>
 
             {/* Input Area */}
-            <div className="space-y-4">
-                <Textarea
-                    placeholder={user ? "Write a comment..." : "Login to join the conversation"}
-                    value={content}
-                    onChange={(e) => setContent(e.target.value)}
-                    disabled={!user || isSubmitting}
-                />
-                <Button onClick={handlePostComment} disabled={!user || isSubmitting}>
-                    {isSubmitting ? "Posting..." : "Post Comment"}
-                </Button>
-            </div>
+            {user ? (
+                <div className="space-y-4">
+                    <Textarea
+                        value={content}
+                        onChange={(e) => setContent(e.target.value)}
+                        placeholder="Write a comment..."
+                    />
+                    <Button onClick={handlePostComment}>Post Comment</Button>
+                </div>
+            ) : (
+                <div className="p-6 border-2 border-dashed rounded-lg text-center">
+                    <p className="mb-4 text-muted-foreground">Join the discussion</p>
+                    <Button onClick={() => router.push("/login")}>
+                        Login to Comment
+                    </Button>
+                </div>
+            )}
 
             {/* Comments List */}
             <div className="space-y-6">

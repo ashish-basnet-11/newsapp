@@ -2,7 +2,7 @@ import type { Request, Response } from "express";
 import AppDataSource from "../config/db.js";
 import { Article } from "../Entities/Article.js";
 import { User } from "../Entities/User.js";
-import type { FindOptionsWhere } from "typeorm";
+import { Like, type FindOptionsWhere } from "typeorm";
 
 
 export const createArticle = async (req: Request, res: Response) => {

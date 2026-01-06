@@ -142,3 +142,27 @@ export const getMe = async (req: Request, res: Response) => {
         return res.status(500).json({ message: "Internal server error" });
     }
 };
+
+export const getAllUsers = async (req: Request, res: Response) => {
+    try {
+
+        const UserRepo = AppDataSource.getRepository(User)
+
+        const users = await UserRepo.find({
+            select: ["id", "name", "email", "role"],
+            // order: {
+            //     createdAt: "DESC"
+            // }
+        })
+
+        return res.status(200).json({
+            status: "success",
+            results: users.length,
+            data: users
+        })
+
+    } catch (error) {
+        console.error("Error fetching users:", error);
+        return res.status(500).json({ message: "Internal server error" });
+    }
+}

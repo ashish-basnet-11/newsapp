@@ -1,9 +1,6 @@
-// app/admin/page.tsx
-"use client"
-
-import { ChartAreaInteractive } from "@/components/chart-area-interactive"
-import { DataTable } from "@/components/data-table"
-import { SectionCards } from "@/components/section-cards"
+import { ChartAreaInteractive } from "@/components/dashboard/chart-area-interactive"
+import { DataTable } from "@/components/dashboard/data-table"
+import { SectionCards } from "@/components/dashboard/section-cards"
 import data from "./data.json"
 
 export default function Page() {
