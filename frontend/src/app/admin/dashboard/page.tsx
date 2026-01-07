@@ -11,7 +11,7 @@ export default function Page() {
         <ChartAreaInteractive />
       </div>
       <div className="px-4 lg:px-6">
-        <DataTable data={data} />
+        {/* <DataTable data={data} /> */}
       </div>
     </div>
   )

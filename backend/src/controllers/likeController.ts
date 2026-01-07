@@ -2,7 +2,6 @@ import type { Request, Response } from "express";
 import { Article } from "../Entities/Article.js";
 import { Like } from "../Entities/Like.js";
 
-// 1. Toggle Like (Remains mostly the same, but fixed a tiny typo in userId)
 export const toggleLike = async (req: Request, res: Response) => {
     try {
         const { articleId } = req.params;
@@ -37,7 +36,6 @@ export const toggleLike = async (req: Request, res: Response) => {
     }
 };
 
-// 2. NEW: Check if the specific user likes this specific article
 export const getLikeStatus = async (req: Request, res: Response) => {
     try {
         const { articleId } = req.params;
@@ -60,7 +58,6 @@ export const getLikeStatus = async (req: Request, res: Response) => {
     }
 };
 
-// 3. Updated: Get all likes FOR A SPECIFIC ARTICLE
 export const getAllLikes = async (req: Request, res: Response) => {
     const { articleId } = req.params;
 

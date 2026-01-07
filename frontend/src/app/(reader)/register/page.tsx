@@ -21,7 +21,7 @@ const RegisterPage = () => {
             const response = await api.post("/auth/register", { name, email, password });
 
             if (response.data.status === "success" || response.status === 201) {
-                router.push("/login");
+                router.push("/auth/login");
                 router.refresh();
             }
         } catch (err: any) {

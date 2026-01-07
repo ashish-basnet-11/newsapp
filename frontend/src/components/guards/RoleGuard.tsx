@@ -3,6 +3,7 @@
 import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
+import { toast } from "sonner";
 
 interface RoleGuardProps {
     children: React.ReactNode,
@@ -18,6 +19,7 @@ export const RoleGuard = ({children, allowedRoles} : RoleGuardProps) => {
         if(!loading) {
             if(!user || !allowedRoles.includes(user.role)) {
                 router.push("/")
+                toast.error("Unauthorized")
             }
         }
     }, [user, loading, router, allowedRoles])

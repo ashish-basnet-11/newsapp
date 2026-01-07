@@ -166,7 +166,6 @@ export const updateArticles = async (req: Request, res: Response) => {
 
 }
 
-
 export const deleteArticle = async (req: Request, res: Response) => {
     const { articleId } = req.params;
 
